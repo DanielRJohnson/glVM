@@ -31,9 +31,17 @@ func Test_Pop_ReturnsCorrectItem(t *testing.T) {
 	s.Push(1)
 	s.Push(2)
 	s.Push(3)
-	item := s.Pop()
+	item, _ := s.Pop()
 	if item != 3 {
 		t.Errorf("Pop did not return correct item. Item Expected=%d, Got=%d", 3, item)
+	}
+}
+
+func Test_Pop_ReturnsErrorOnEmpty(t *testing.T) {
+	s := New[int]()
+	_, err := s.Pop()
+	if err == nil {
+		t.Errorf("Popping an empty stack did not return an error")
 	}
 }
 
@@ -52,8 +60,17 @@ func Test_Pop2_ReturnsCorrectItems(t *testing.T) {
 	s.Push(1)
 	s.Push(2)
 	s.Push(3)
-	item1, item2 := s.Pop2()
+	item1, item2, _ := s.Pop2()
 	if item1 != 3 || item2 != 2 {
 		t.Errorf("Pop2 did not return correct items. Items Expected=(%d, %d), Got=(%d, %d)", 3, 2, item1, item2)
+	}
+}
+
+func Test_Pop2_ReturnsErrorOnSizeLessThanTwo(t *testing.T) {
+	s := New[int]()
+	s.Push(1)
+	_, _, err := s.Pop2()
+	if err == nil {
+		t.Errorf("Pop-2-ing a stack of size %d did not return an error", s.Size())
 	}
 }
