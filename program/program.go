@@ -1,22 +1,24 @@
 package program
 
-type Program[T any] struct {
+import "github.com/danielrjohnson/glVM/values"
+
+type Program struct {
 	code   []int
-	data   []T
+	data   []values.Value
 	labels map[string]int
 }
 
-func New[T any]() Program[T] {
-	program := Program[T]{
+func New[T any]() Program {
+	program := Program{
 		code:   []int{},
-		data:   []T{},
+		data:   []values.Value{},
 		labels: make(map[string]int),
 	}
 	program.labels["main"] = 0
 	return program
 }
 
-func (p *Program[T]) PushInstruction(opcode int, args []T) error {
+func (p *Program) PushInstruction(opcode int, args []values.Value) error {
 	p.code = append(p.code, opcode)
 	for _, arg := range args {
 		dataIdx := p.PushData(arg)
@@ -25,23 +27,23 @@ func (p *Program[T]) PushInstruction(opcode int, args []T) error {
 	return nil
 }
 
-func (p *Program[T]) PushData(item T) int {
+func (p *Program) PushData(item values.Value) int {
 	p.data = append(p.data, item)
 	return len(p.data) - 1
 }
 
-func (p *Program[T]) PushLabel(name string) {
+func (p *Program) PushLabel(name string) {
 	p.labels[name] = len(p.code)
 }
 
-func (p Program[T]) Code() []int {
+func (p Program) Code() []int {
 	return p.code
 }
 
-func (p Program[T]) Data() []T {
+func (p Program) Data() []values.Value {
 	return p.data
 }
 
-func (p Program[T]) Labels() map[string]int {
+func (p Program) Labels() map[string]int {
 	return p.labels
 }
