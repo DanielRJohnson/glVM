@@ -1,9 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"github.com/danielrjohnson/glVM/VM"
+	"github.com/danielrjohnson/glVM/instructions"
+	"github.com/danielrjohnson/glVM/program"
 )
 
 func main() {
-	fmt.Println("Hello VM")
+	prog := program.New[int]()
+	prog.PushInstruction(instructions.NOOP, []int{})
+
+	vm := VM.New(prog)
+	vm.Run()
 }
