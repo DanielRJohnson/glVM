@@ -10,42 +10,66 @@ import (
 )
 
 type VM struct {
-	program program.Program
-	ip      uint64
-	stack   stack.Stack[values.Value]
+	program          program.Program
+	ip               uint64
+	stack            stack.Stack[values.Value]
+	instructionTable map[int]func()
 }
 
-func New(program program.Program) VM {
-	return VM{
+func New(program program.Program) *VM {
+	vm := VM{
 		program,
 		0,
 		stack.New[values.Value](),
+		make(map[int]func()),
 	}
+	vm.instructionTable = map[int]func(){
+		instructions.NOOP: vm.Noop,
+		instructions.PUSH: vm.Push,
+		instructions.ADD:  vm.Add,
+	}
+	return &vm
 }
 
 func (vm *VM) Run() {
-	code := vm.program.Code()
-	data := vm.program.Data()
-	for int(vm.ip) < len(code) {
-		instr := code[vm.ip]
-		switch instr {
-		case instructions.NOOP:
-			fmt.Println("NOOP :)")
-		case instructions.PUSH:
-			vm.ip++
-			vm.stack.Push(data[code[vm.ip]])
-		case instructions.ADD:
-			op1, op2, _ := vm.stack.Pop2()
-			if op1.Type() == "int" && op2.Type() == "int" {
-				vm.stack.Push(values.FromInt(op1.Value().(int) + op2.Value().(int)))
-			}
-		}
-		vm.ip++
+	for int(vm.ip) < len(vm.program.Code()) {
+		instr := vm.GetCodeAtIP()
+		vm.instructionTable[instr]()
+		vm.AdvanceIP()
 	}
 }
 
-func (vm VM) Show() {
-	fmt.Println("===")
+func (vm *VM) GetCodeAtIP() int {
+	return vm.program.Code()[vm.ip]
+}
+
+func (vm *VM) GetDataFromIP() values.Value {
+	dataIdx := vm.GetCodeAtIP()
+	return vm.program.Data()[dataIdx]
+}
+
+func (vm *VM) AdvanceIP() {
+	vm.ip++
+}
+
+func (vm *VM) Noop() {}
+
+func (vm *VM) Push() {
+	vm.AdvanceIP()
+	data := vm.GetDataFromIP()
+	vm.stack.Push(data)
+}
+
+func (vm *VM) Add() {
+	op1, op2, _ := vm.stack.Pop2()
+	if op1.Type() == "int" && op2.Type() == "int" {
+		result := op1.Value().(int) + op2.Value().(int)
+		vm.stack.Push(values.FromInt(result))
+	}
+}
+
+func (vm *VM) Show() {
+	fmt.Println("=== VM ===")
 	fmt.Print("CODE | ")
 	for i, part := range vm.program.Code() {
 		if i == int(vm.ip) {
@@ -53,16 +77,13 @@ func (vm VM) Show() {
 		}
 		fmt.Print(part, " | ")
 	}
-	fmt.Println()
-	fmt.Print("DATA | ")
+	fmt.Print("\nDATA | ")
 	for _, data := range vm.program.Data() {
 		fmt.Print(data, " | ")
 	}
-	fmt.Println()
-	fmt.Print("STACK | ")
+	fmt.Print("\nSTACK | ")
 	for _, op := range vm.stack.Items() {
 		fmt.Print(op, " | ")
 	}
-	fmt.Println()
-	fmt.Println("===")
+	fmt.Println("\n==========")
 }
