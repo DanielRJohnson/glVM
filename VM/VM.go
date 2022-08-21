@@ -1,11 +1,12 @@
 package VM
 
 import (
+	"bytes"
 	"fmt"
 
-	"github.com/danielrjohnson/glVM/VM/stack"
 	"github.com/danielrjohnson/glVM/instructions"
 	"github.com/danielrjohnson/glVM/program"
+	"github.com/danielrjohnson/glVM/stack"
 	"github.com/danielrjohnson/glVM/values"
 )
 
@@ -33,23 +34,14 @@ func New(program program.Program) *VM {
 
 func (vm *VM) Run() {
 	for int(vm.ip) < len(vm.program.Code()) {
-		instr := vm.GetCodeAtIP()
-		vm.instructionTable[instr]()
-		vm.AdvanceIP()
+		vm.Step()
 	}
 }
 
-func (vm *VM) GetCodeAtIP() int {
-	return vm.program.Code()[vm.ip]
-}
-
-func (vm *VM) GetDataFromIP() values.Value {
-	dataIdx := vm.GetCodeAtIP()
-	return vm.program.Data()[dataIdx]
-}
-
-func (vm *VM) AdvanceIP() {
-	vm.ip++
+func (vm *VM) Step() {
+	instr := vm.GetCodeAtIP()
+	vm.instructionTable[instr]()
+	vm.AdvanceIP()
 }
 
 func (vm *VM) Noop() {}
@@ -68,22 +60,37 @@ func (vm *VM) Add() {
 	}
 }
 
-func (vm *VM) Show() {
-	fmt.Println("=== VM ===")
-	fmt.Print("CODE | ")
+func (vm *VM) GetCodeAtIP() int {
+	return vm.program.Code()[vm.ip]
+}
+
+func (vm *VM) GetDataFromIP() values.Value {
+	dataIdx := vm.GetCodeAtIP()
+	return vm.program.Data()[dataIdx]
+}
+
+func (vm *VM) AdvanceIP() {
+	vm.ip++
+}
+
+func (vm *VM) Show() string {
+	var buf bytes.Buffer
+	buf.WriteString("=== VM ===\n")
+	buf.WriteString("CODE | ")
 	for i, part := range vm.program.Code() {
 		if i == int(vm.ip) {
-			fmt.Print("->")
+			buf.WriteString("->")
 		}
-		fmt.Print(part, " | ")
+		buf.WriteString(fmt.Sprintf("%d | ", part))
 	}
-	fmt.Print("\nDATA | ")
+	buf.WriteString("\nDATA | ")
 	for _, data := range vm.program.Data() {
-		fmt.Print(data, " | ")
+		buf.WriteString(fmt.Sprintf("%d | ", data))
 	}
-	fmt.Print("\nSTACK | ")
+	buf.WriteString("\nSTACK | ")
 	for _, op := range vm.stack.Items() {
-		fmt.Print(op, " | ")
+		buf.WriteString(fmt.Sprintf("%d | ", op))
 	}
-	fmt.Println("\n==========")
+	buf.WriteString("\n==========\n")
+	return buf.String()
 }

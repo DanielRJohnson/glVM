@@ -8,7 +8,7 @@ type Program struct {
 	labels map[string]int
 }
 
-func New[T any]() Program {
+func New() Program {
 	program := Program{
 		code:   []int{},
 		data:   []values.Value{},
