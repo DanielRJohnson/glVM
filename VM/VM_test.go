@@ -71,6 +71,57 @@ func Test_AddPopsTopTwoAndPushesTheirSum(t *testing.T) {
 	}
 }
 
+func Test_SubPopsTopTwoAndPushesTheirDifference(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(4)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(2)})
+	prog.PushInstruction(instructions.SUB, []values.Value{})
+	vm := New(prog)
+	vm.Run()
+	if vm.stack.Size() != 2 {
+		t.Fatalf("Sub did not result in correct stack size, got=%d expected=%d", vm.stack.Size(), 2)
+	}
+	diff := vm.stack.Items()[1].Value().(int)
+	if diff != 2 {
+		t.Fatalf("Sub did not result in correct difference, got=%d expected=%d", diff, 2)
+	}
+}
+
+func Test_MulPopsTopTwoAndPushesTheirProduct(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(4)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(6)})
+	prog.PushInstruction(instructions.MUL, []values.Value{})
+	vm := New(prog)
+	vm.Run()
+	if vm.stack.Size() != 2 {
+		t.Fatalf("Mul did not result in correct stack size, got=%d expected=%d", vm.stack.Size(), 2)
+	}
+	product := vm.stack.Items()[1].Value().(int)
+	if product != 24 {
+		t.Fatalf("Add did not result in correct product, got=%d expected=%d", product, 24)
+	}
+}
+
+func Test_DivPopsTopTwoAndPushesTheirQuotient(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(8)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(2)})
+	prog.PushInstruction(instructions.DIV, []values.Value{})
+	vm := New(prog)
+	vm.Run()
+	if vm.stack.Size() != 2 {
+		t.Fatalf("Div did not result in correct stack size, got=%d expected=%d", vm.stack.Size(), 2)
+	}
+	quotient := vm.stack.Items()[1].Value().(int)
+	if quotient != 4 {
+		t.Fatalf("Div did not result in correct quotient, got=%d expected=%d", quotient, 4)
+	}
+}
+
 func Test_GetCodeAtIPReturnsCorrectCode(t *testing.T) {
 	prog := program.New()
 	prog.PushInstruction(instructions.NOOP, []values.Value{})

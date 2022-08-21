@@ -4,4 +4,7 @@ const (
 	NOOP = iota
 	PUSH
 	ADD
+	SUB
+	MUL
+	DIV
 )

@@ -28,6 +28,9 @@ func New(program program.Program) *VM {
 		instructions.NOOP: vm.Noop,
 		instructions.PUSH: vm.Push,
 		instructions.ADD:  vm.Add,
+		instructions.SUB:  vm.Sub,
+		instructions.MUL:  vm.Mul,
+		instructions.DIV:  vm.Div,
 	}
 	return &vm
 }
@@ -53,9 +56,33 @@ func (vm *VM) Push() {
 }
 
 func (vm *VM) Add() {
-	op1, op2, _ := vm.stack.Pop2()
+	op2, op1, _ := vm.stack.Pop2()
 	if op1.Type() == "int" && op2.Type() == "int" {
 		result := op1.Value().(int) + op2.Value().(int)
+		vm.stack.Push(values.FromInt(result))
+	}
+}
+
+func (vm *VM) Sub() {
+	op2, op1, _ := vm.stack.Pop2()
+	if op1.Type() == "int" && op2.Type() == "int" {
+		result := op1.Value().(int) - op2.Value().(int)
+		vm.stack.Push(values.FromInt(result))
+	}
+}
+
+func (vm *VM) Mul() {
+	op2, op1, _ := vm.stack.Pop2()
+	if op1.Type() == "int" && op2.Type() == "int" {
+		result := op1.Value().(int) * op2.Value().(int)
+		vm.stack.Push(values.FromInt(result))
+	}
+}
+
+func (vm *VM) Div() {
+	op2, op1, _ := vm.stack.Pop2()
+	if op1.Type() == "int" && op2.Type() == "int" {
+		result := op1.Value().(int) / op2.Value().(int)
 		vm.stack.Push(values.FromInt(result))
 	}
 }
