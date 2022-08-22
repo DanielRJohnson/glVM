@@ -7,6 +7,7 @@ import (
 	"github.com/danielrjohnson/glVM/instructions"
 	"github.com/danielrjohnson/glVM/program"
 	"github.com/danielrjohnson/glVM/stack"
+	"github.com/danielrjohnson/glVM/types"
 	"github.com/danielrjohnson/glVM/values"
 )
 
@@ -57,33 +58,69 @@ func (vm *VM) Push() {
 
 func (vm *VM) Add() {
 	op2, op1, _ := vm.stack.Pop2()
-	if op1.Type() == "int" && op2.Type() == "int" {
+	if op1.Type() == types.Int && op2.Type() == types.Int {
 		result := op1.Value().(int) + op2.Value().(int)
 		vm.stack.Push(values.FromInt(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Int {
+		result := op1.Value().(float32) + float32(op2.Value().(int))
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Int && op2.Type() == types.Float {
+		result := float32(op1.Value().(int)) + op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Float {
+		result := op1.Value().(float32) + op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
 	}
 }
 
 func (vm *VM) Sub() {
 	op2, op1, _ := vm.stack.Pop2()
-	if op1.Type() == "int" && op2.Type() == "int" {
+	if op1.Type() == types.Int && op2.Type() == types.Int {
 		result := op1.Value().(int) - op2.Value().(int)
 		vm.stack.Push(values.FromInt(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Int {
+		result := op1.Value().(float32) - float32(op2.Value().(int))
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Int && op2.Type() == types.Float {
+		result := float32(op1.Value().(int)) - op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Float {
+		result := op1.Value().(float32) - op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
 	}
 }
 
 func (vm *VM) Mul() {
 	op2, op1, _ := vm.stack.Pop2()
-	if op1.Type() == "int" && op2.Type() == "int" {
+	if op1.Type() == types.Int && op2.Type() == types.Int {
 		result := op1.Value().(int) * op2.Value().(int)
 		vm.stack.Push(values.FromInt(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Int {
+		result := op1.Value().(float32) * float32(op2.Value().(int))
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Int && op2.Type() == types.Float {
+		result := float32(op1.Value().(int)) * op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Float {
+		result := op1.Value().(float32) * op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
 	}
 }
 
 func (vm *VM) Div() {
 	op2, op1, _ := vm.stack.Pop2()
-	if op1.Type() == "int" && op2.Type() == "int" {
+	if op1.Type() == types.Int && op2.Type() == types.Int {
 		result := op1.Value().(int) / op2.Value().(int)
 		vm.stack.Push(values.FromInt(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Int {
+		result := op1.Value().(float32) / float32(op2.Value().(int))
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Int && op2.Type() == types.Float {
+		result := float32(op1.Value().(int)) / op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.Float && op2.Type() == types.Float {
+		result := op1.Value().(float32) / op2.Value().(float32)
+		vm.stack.Push(values.FromFloat(result))
 	}
 }
 
