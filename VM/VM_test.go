@@ -95,6 +95,20 @@ func Test_AddPopsTopTwoMixedNumbersAndPushesThierSumAsFloat(t *testing.T) {
 	}
 }
 
+func Test_AddPopsTopTwoStringsAndPushesThierConcatenatedString(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("Hello ")})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("World!")})
+	prog.PushInstruction(instructions.ADD, []values.Value{})
+	vm := New(prog)
+	vm.Run()
+	if assert.Equalf(t, vm.stack.Size(), 2,
+		"Add did not result in correct stack size, got=%d expected=%d", vm.stack.Size(), 2) {
+		sum := vm.stack.Items()[1].Value().(string)
+		assert.Equalf(t, sum, "Hello World!", "Add did not result in correct sum, got=%f expected=%f", sum, "Hello World!")
+	}
+}
 func Test_SubPopsTopTwoAndPushesTheirDifference(t *testing.T) {
 	prog := program.New()
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})

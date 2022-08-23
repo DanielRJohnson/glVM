@@ -70,6 +70,9 @@ func (vm *VM) Add() {
 	} else if op1.Type() == types.Float && op2.Type() == types.Float {
 		result := op1.Value().(float32) + op2.Value().(float32)
 		vm.stack.Push(values.FromFloat(result))
+	} else if op1.Type() == types.String && op2.Type() == types.String {
+		result := op1.Value().(string) + op2.Value().(string)
+		vm.stack.Push(values.FromString(result))
 	}
 }
 
