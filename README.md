@@ -20,6 +20,16 @@ It's a work in progress stack-based virtual machine :)
 
 functions (label functionality, get/set arg/ret, fib test)
 
-Arrays + array operations?
+/program tests
 
-Booleans + boolean logic?
+/values tests
+
+## Not Planned Currently, but Reasonable Extensions
+
+Arrays + array operations
+
+Booleans + boolean logic
+
+Standard Library
+
+etc
