@@ -16,7 +16,7 @@ It's a work in progress stack-based virtual machine :)
 
 ~~Strings + string concatenation~~
 
-Conditionals + loops (jump structure of some sort)
+~~Conditionals + loops (jump structure of some sort, JE)~~
 
 functions (label functionality, get/set arg/ret, fib test)
 

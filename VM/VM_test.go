@@ -36,6 +36,36 @@ func Test_StepExecutesOneInstruction(t *testing.T) {
 	assert.NotEqualf(t, vm.ip, 1, "Step did not execute one instruction resulting in wrong ip, got=%d expected=%d", vm.ip, 1)
 }
 
+func Test_JeJumpsToLabelIfEqual(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("After")})
+	prog.PushInstruction(instructions.JE, []values.Value{})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("If this executes, something is wrong")})
+	prog.PushLabel("After")
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
+	vm := New(prog)
+	vm.Run()
+	assert.Equalf(t, vm.stack.Size(), 0,
+		"JE did not jump when values are equal, stack size got=%d expected=%d", vm.stack.Size(), 0)
+}
+
+func Test_JeDoesNotJumpToLabelIfNotEqual(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(4)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("After")})
+	prog.PushInstruction(instructions.JE, []values.Value{})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("If this does not execute, something is wrong")})
+	prog.PushLabel("After")
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
+	vm := New(prog)
+	vm.Run()
+	assert.Equalf(t, vm.stack.Size(), 1,
+		"JE jumped when values are not equal, stack size got=%d expected=%d", vm.stack.Size(), 1)
+}
+
 func Test_PushAddsItemToStack(t *testing.T) {
 	prog := program.New()
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})

@@ -7,4 +7,5 @@ const (
 	SUB
 	MUL
 	DIV
+	JE
 )
