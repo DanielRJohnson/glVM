@@ -24,6 +24,8 @@ functions (label functionality, get/set arg/ret, fib test)
 
 /values tests
 
+Bytecode file reading/execution
+
 ## Not Planned Currently, but Reasonable Extensions
 
 Arrays + array operations
