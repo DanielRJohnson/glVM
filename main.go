@@ -15,6 +15,8 @@ func main() {
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
 	prog.PushInstruction(instructions.ADD, []values.Value{})
+	out := prog.Disassemble()
+	fmt.Println(out)
 
 	vm := VM.New(prog)
 	fmt.Println(vm.Show())

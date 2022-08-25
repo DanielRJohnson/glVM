@@ -1,6 +1,12 @@
 package program
 
-import "github.com/danielrjohnson/glVM/values"
+import (
+	"bytes"
+	"fmt"
+
+	"github.com/danielrjohnson/glVM/instructions"
+	"github.com/danielrjohnson/glVM/values"
+)
 
 type Program struct {
 	code   []int
@@ -46,4 +52,30 @@ func (p Program) Data() []values.Value {
 
 func (p Program) Labels() map[string]int {
 	return p.labels
+}
+
+func (p Program) Disassemble() string {
+	var out bytes.Buffer
+	for idx, data := range p.data {
+		out.WriteString(fmt.Sprintf("@%d: %v\n", idx, data))
+	}
+	out.WriteString("\n")
+
+	reversedLabels := make(map[int]string)
+	for name, ip := range p.labels {
+		reversedLabels[ip] = name
+	}
+
+	for i := 0; i < len(p.code); i++ {
+		if name, ok := reversedLabels[i]; ok {
+			out.WriteString(fmt.Sprintf("%s: \n", name))
+		}
+		out.WriteString(instructions.InstructionNames[p.code[i]])
+		for j := 0; j < instructions.InstructionArities[p.code[i]]; j++ {
+			out.WriteString(fmt.Sprintf(" @%d ", p.code[i]))
+			i++
+		}
+		out.WriteString("\n")
+	}
+	return out.String()
 }
