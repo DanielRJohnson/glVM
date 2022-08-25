@@ -15,10 +15,6 @@ func (f *Frame) RetAddr() uint64 {
 	return f.retAddr
 }
 
-func (f *Frame) LocalVars() map[string]values.Value {
-	return f.locals
-}
-
 func (f *Frame) GetLocal(name string) (values.Value, bool) {
 	local, exists := f.locals[name]
 	return local, exists

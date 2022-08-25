@@ -24,7 +24,7 @@ It's a work in progress stack-based virtual machine :)
 
 ~~/values tests~~
 
-/frame tests
+~~/frame tests~~
 
 Bytecode file reading/execution (main executable)
 
