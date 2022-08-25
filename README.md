@@ -20,9 +20,9 @@ It's a work in progress stack-based virtual machine :)
 
 ~~functions (call, jump, ret, call stack, fib test)~~
 
-/program tests
+~~/program tests~~
 
-/values tests
+~~/values tests~~
 
 /frame tests
 
