@@ -35,6 +35,10 @@ func (s *Stack[T]) Pop2() (T, T, error) {
 	return poppedItem1, poppedItem2, nil
 }
 
+func (s *Stack[T]) Peek() T {
+	return s.items[len(s.items)-1]
+}
+
 func (s *Stack[T]) IsEmpty() bool {
 	return len(s.items) == 0
 }

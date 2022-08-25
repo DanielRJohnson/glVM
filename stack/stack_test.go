@@ -64,6 +64,14 @@ func Test_Pop2_ReturnsErrorOnSizeLessThanTwo(t *testing.T) {
 	assert.NotNilf(t, err, "Pop2 on stack of size %d did not return an error", s.Size())
 }
 
+func Test_Peek_ReturnsTopItem(t *testing.T) {
+	s := New[int]()
+	s.Push(1)
+	s.Push(2)
+	item := s.Peek()
+	assert.Equalf(t, item, 2, "Peek did not return correct item, got=%d expected=%d", item, 2)
+}
+
 func Test_Items_ReturnsArrayOfItems(t *testing.T) {
 	s := New[int]()
 	s.Push(1)

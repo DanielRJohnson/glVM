@@ -17,7 +17,7 @@ type VM struct {
 	ip               uint64
 	stack            stack.Stack[values.Value]
 	instructionTable map[int]func()
-	callStack        stack.Stack[frame.Frame]
+	callStack        stack.Stack[*frame.Frame]
 }
 
 func New(program program.Program) *VM {
@@ -26,7 +26,7 @@ func New(program program.Program) *VM {
 		0,
 		stack.New[values.Value](),
 		make(map[int]func()),
-		stack.New[frame.Frame](),
+		stack.New[*frame.Frame](),
 	}
 	vm.callStack.Push(frame.New(uint64(len(program.Code())))) // main's retAddr is after program
 	vm.instructionTable = map[int]func(){
@@ -34,8 +34,11 @@ func New(program program.Program) *VM {
 		instructions.PUSH: vm.Push,
 		instructions.J:    vm.J,
 		instructions.JE:   vm.JE,
+		instructions.JNE:  vm.JNE,
 		instructions.CALL: vm.Call,
 		instructions.RET:  vm.Ret,
+		instructions.SET:  vm.Set,
+		instructions.GET:  vm.Get,
 		instructions.ADD:  vm.Add,
 		instructions.SUB:  vm.Sub,
 		instructions.MUL:  vm.Mul,
@@ -79,6 +82,15 @@ func (vm *VM) JE() {
 	}
 }
 
+func (vm *VM) JNE() {
+	op1, op2, _ := vm.stack.Pop2()
+	if op1 != op2 {
+		vm.J()
+	} else {
+		vm.AdvanceIP() // go past label
+	}
+}
+
 func (vm *VM) Call() {
 	vm.callStack.Push(frame.New(vm.ip))
 	vm.J()
@@ -87,6 +99,20 @@ func (vm *VM) Call() {
 func (vm *VM) Ret() {
 	frame, _ := vm.callStack.Pop()
 	vm.ip = frame.RetAddr() + 1 // retAddr will be call, then inc to label, then post-instruction inc for next instr
+}
+
+func (vm *VM) Set() {
+	op, _ := vm.stack.Pop()
+	vm.AdvanceIP()
+	name := vm.GetDataFromIP()
+	vm.callStack.Peek().SetLocal(name.Value().(string), op)
+}
+
+func (vm *VM) Get() {
+	vm.AdvanceIP()
+	name := vm.GetDataFromIP()
+	val, _ := vm.callStack.Peek().GetLocal(name.Value().(string))
+	vm.stack.Push(val)
 }
 
 func (vm *VM) Add() {

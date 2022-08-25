@@ -18,13 +18,15 @@ It's a work in progress stack-based virtual machine :)
 
 ~~Conditionals + loops (jump structure of some sort, JE)~~
 
-functions (call, jump, ret, call stack, fib test)
+~~functions (call, jump, ret, call stack, fib test)~~
 
 /program tests
 
 /values tests
 
-Bytecode file reading/execution
+/frame tests
+
+Bytecode file reading/execution (main executable)
 
 ## Not Planned Currently, but Reasonable Extensions
 
