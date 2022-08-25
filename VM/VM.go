@@ -28,6 +28,7 @@ func New(program program.Program) *VM {
 	vm.instructionTable = map[int]func(){
 		instructions.NOOP: vm.Noop,
 		instructions.PUSH: vm.Push,
+		instructions.J:    vm.J,
 		instructions.JE:   vm.JE,
 		instructions.ADD:  vm.Add,
 		instructions.SUB:  vm.Sub,
@@ -55,6 +56,12 @@ func (vm *VM) Push() {
 	vm.AdvanceIP()
 	data := vm.GetDataFromIP()
 	vm.stack.Push(data)
+}
+
+func (vm *VM) J() {
+	vm.AdvanceIP()
+	label := vm.GetDataFromIP()
+	vm.ip = uint64(vm.program.Labels()[label.Value().(string)])
 }
 
 func (vm *VM) JE() {

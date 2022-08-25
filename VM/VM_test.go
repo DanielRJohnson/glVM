@@ -64,6 +64,18 @@ func Test_JeDoesNotJumpToLabelIfNotEqual(t *testing.T) {
 		"JE jumped when values are not equal, stack size got=%d expected=%d", vm.stack.Size(), 1)
 }
 
+func Test_JJumpsToLabel(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.J, []values.Value{values.FromString("After")})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("If this executes, something is wrong")})
+	prog.PushLabel("After")
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
+	vm := New(prog)
+	vm.Run()
+	assert.Equalf(t, vm.stack.Size(), 0,
+		"J did not jump, stack size got=%d expected=%d", vm.stack.Size(), 0)
+}
+
 func Test_PushAddsItemToStack(t *testing.T) {
 	prog := program.New()
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})

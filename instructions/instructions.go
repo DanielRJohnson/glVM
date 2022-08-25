@@ -8,4 +8,5 @@ const (
 	MUL
 	DIV
 	JE
+	J
 )
