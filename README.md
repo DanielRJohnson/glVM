@@ -18,7 +18,7 @@ It's a work in progress stack-based virtual machine :)
 
 ~~Conditionals + loops (jump structure of some sort, JE)~~
 
-functions (label functionality, get/set arg/ret, fib test)
+functions (call, jump, ret, call stack, fib test)
 
 /program tests
 
