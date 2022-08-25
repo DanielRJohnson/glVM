@@ -41,13 +41,14 @@ func Test_JeJumpsToLabelIfEqual(t *testing.T) {
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
 	prog.PushInstruction(instructions.JE, []values.Value{values.FromString("After")})
-	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("If this executes, something is wrong")})
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
 	prog.PushLabel("After")
 	prog.PushInstruction(instructions.NOOP, []values.Value{})
 	vm := New(prog)
-	vm.Run()
-	assert.Equalf(t, vm.stack.Size(), 0,
-		"JE did not jump when values are equal, stack size got=%d expected=%d", vm.stack.Size(), 0)
+	vm.Step()
+	vm.Step()
+	vm.Step()
+	assert.Equalf(t, vm.ip, uint64(7), "JE did not jump to correct ip when values are equal, got=%d expected=%d", vm.ip, 7)
 }
 
 func Test_JeDoesNotJumpToLabelIfNotEqual(t *testing.T) {
@@ -55,37 +56,52 @@ func Test_JeDoesNotJumpToLabelIfNotEqual(t *testing.T) {
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(4)})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
 	prog.PushInstruction(instructions.JE, []values.Value{values.FromString("After")})
-	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("If this does not execute, something is wrong")})
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
 	prog.PushLabel("After")
 	prog.PushInstruction(instructions.NOOP, []values.Value{})
 	vm := New(prog)
-	vm.Run()
-	assert.Equalf(t, vm.stack.Size(), 1,
-		"JE jumped when values are not equal, stack size got=%d expected=%d", vm.stack.Size(), 1)
+	vm.Step()
+	vm.Step()
+	vm.Step()
+	assert.Equalf(t, vm.ip, uint64(6), "JE jumped to ip when values were not equal, got=%d expected=%d", vm.ip, 6)
 }
 
 func Test_JJumpsToLabel(t *testing.T) {
 	prog := program.New()
 	prog.PushInstruction(instructions.J, []values.Value{values.FromString("After")})
-	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("If this executes, something is wrong")})
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
 	prog.PushLabel("After")
 	prog.PushInstruction(instructions.NOOP, []values.Value{})
 	vm := New(prog)
-	vm.Run()
-	assert.Equalf(t, vm.stack.Size(), 0,
-		"J did not jump, stack size got=%d expected=%d", vm.stack.Size(), 0)
+	vm.Step()
+	assert.Equalf(t, vm.ip, uint64(3), "J did not jump to correct ip, got=%d expected=%d", vm.ip, 3)
 }
 
-func Test_PushAddsItemToStack(t *testing.T) {
+func Test_CallJumpsToLabelAndPushesFrameOnCallStack(t *testing.T) {
 	prog := program.New()
-	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})
+	prog.PushInstruction(instructions.CALL, []values.Value{values.FromString("Function")})
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
+	prog.PushLabel("Function")
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
 	vm := New(prog)
 	vm.Step()
-	if assert.Equalf(t, vm.stack.Size(), 1,
-		"Push did not result in correct stack size, got=%d expected=%d", vm.stack.Size(), 1) {
-		stackItem := vm.stack.Items()[0].Value().(int)
-		assert.Equalf(t, stackItem, 5, "Push did not push correct value to stack, got=%d expected=%d", stackItem, 5)
-	}
+	assert.Equalf(t, vm.ip, uint64(3), "Call did not jump to correct ip, got=%d expected=%d", vm.ip, 3)
+	assert.Equalf(t, vm.callStack.Size(), 2,
+		"Call did not push frame on stack, size got=%d expected=%d", vm.callStack.Size(), 2)
+}
+
+func Test_RetJumpsToRetAddrAndPopsFrameOffCallStack(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.CALL, []values.Value{values.FromString("Function")})
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
+	prog.PushLabel("Function")
+	prog.PushInstruction(instructions.RET, []values.Value{})
+	vm := New(prog)
+	vm.Step()
+	vm.Step()
+	assert.Equalf(t, vm.ip, uint64(2), "Ret did not jump to correct ip, got=%d expected=%d", vm.ip, 2)
+	assert.Equalf(t, vm.callStack.Size(), 1,
+		"Ret did not pop frame off stack, size got=%d expected=%d", vm.callStack.Size(), 1)
 }
 
 func Test_AddPopsTopTwoIntegersAndPushesThierSumAsInteger(t *testing.T) {
@@ -149,6 +165,7 @@ func Test_AddPopsTopTwoStringsAndPushesThierConcatenatedString(t *testing.T) {
 		assert.Equalf(t, sum, "Hello World!", "Add did not result in correct sum, got=%f expected=%f", sum, "Hello World!")
 	}
 }
+
 func Test_SubPopsTopTwoAndPushesTheirDifference(t *testing.T) {
 	prog := program.New()
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(5)})

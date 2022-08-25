@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/danielrjohnson/glVM/frame"
 	"github.com/danielrjohnson/glVM/instructions"
 	"github.com/danielrjohnson/glVM/program"
 	"github.com/danielrjohnson/glVM/stack"
@@ -16,6 +17,7 @@ type VM struct {
 	ip               uint64
 	stack            stack.Stack[values.Value]
 	instructionTable map[int]func()
+	callStack        stack.Stack[frame.Frame]
 }
 
 func New(program program.Program) *VM {
@@ -24,12 +26,16 @@ func New(program program.Program) *VM {
 		0,
 		stack.New[values.Value](),
 		make(map[int]func()),
+		stack.New[frame.Frame](),
 	}
+	vm.callStack.Push(frame.New(uint64(len(program.Code())))) // main's retAddr is after program
 	vm.instructionTable = map[int]func(){
 		instructions.NOOP: vm.Noop,
 		instructions.PUSH: vm.Push,
 		instructions.J:    vm.J,
 		instructions.JE:   vm.JE,
+		instructions.CALL: vm.Call,
+		instructions.RET:  vm.Ret,
 		instructions.ADD:  vm.Add,
 		instructions.SUB:  vm.Sub,
 		instructions.MUL:  vm.Mul,
@@ -61,7 +67,7 @@ func (vm *VM) Push() {
 func (vm *VM) J() {
 	vm.AdvanceIP()
 	label := vm.GetDataFromIP()
-	vm.ip = uint64(vm.program.Labels()[label.Value().(string)])
+	vm.ip = uint64(vm.program.Labels()[label.Value().(string)] - 1) // - 1 for post-instruction increment
 }
 
 func (vm *VM) JE() {
@@ -69,8 +75,25 @@ func (vm *VM) JE() {
 	label := vm.GetDataFromIP()
 	op1, op2, _ := vm.stack.Pop2()
 	if op1 == op2 {
-		vm.ip = uint64(vm.program.Labels()[label.Value().(string)])
+		vm.ip = uint64(vm.program.Labels()[label.Value().(string)] - 1)
 	}
+}
+
+// func (vm *VM) JE() {
+// 	op1, op2, _ := vm.stack.Pop2()
+// 	if op1 == op2 {
+// 		vm.J()
+// 	}
+// }
+
+func (vm *VM) Call() {
+	vm.callStack.Push(frame.New(vm.ip))
+	vm.J()
+}
+
+func (vm *VM) Ret() {
+	frame, _ := vm.callStack.Pop()
+	vm.ip = frame.RetAddr() + 1 // retAddr will be call, then inc to label, then post-instruction inc for next instr
 }
 
 func (vm *VM) Add() {

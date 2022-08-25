@@ -9,4 +9,6 @@ const (
 	DIV
 	JE
 	J
+	CALL
+	RET
 )
