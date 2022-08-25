@@ -71,20 +71,13 @@ func (vm *VM) J() {
 }
 
 func (vm *VM) JE() {
-	vm.AdvanceIP()
-	label := vm.GetDataFromIP()
 	op1, op2, _ := vm.stack.Pop2()
 	if op1 == op2 {
-		vm.ip = uint64(vm.program.Labels()[label.Value().(string)] - 1)
+		vm.J()
+	} else {
+		vm.AdvanceIP() // go past label
 	}
 }
-
-// func (vm *VM) JE() {
-// 	op1, op2, _ := vm.stack.Pop2()
-// 	if op1 == op2 {
-// 		vm.J()
-// 	}
-// }
 
 func (vm *VM) Call() {
 	vm.callStack.Push(frame.New(vm.ip))
