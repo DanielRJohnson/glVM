@@ -58,7 +58,8 @@ func (vm *VM) Push() {
 }
 
 func (vm *VM) JE() {
-	label, _ := vm.stack.Pop()
+	vm.AdvanceIP()
+	label := vm.GetDataFromIP()
 	op1, op2, _ := vm.stack.Pop2()
 	if op1 == op2 {
 		vm.ip = uint64(vm.program.Labels()[label.Value().(string)])
