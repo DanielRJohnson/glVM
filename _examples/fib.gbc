@@ -1,0 +1,33 @@
+@0: I(20)
+@1: S("fib")
+@2: S("n")
+@3: I(0)
+@4: S("NotZero")
+@5: I(1)
+@6: S("NotOne")
+@7: I(2)
+
+#main: PUSH @0
+CALL @1
+RET
+#fib: SET @2
+PUSH @3
+GET @2
+JNE @4
+PUSH @3
+RET
+#NotZero: PUSH @5
+GET @2
+JNE @6
+PUSH @5
+RET
+#NotOne: GET @2
+PUSH @5
+SUB
+CALL @1
+GET @2
+PUSH @7
+SUB
+CALL @1
+ADD
+RET

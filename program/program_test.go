@@ -31,6 +31,12 @@ func Test_PushInstructionPushesInstructionWithArgumentToData(t *testing.T) {
 	assert.Equal(t, 1, len(prog.data), "PushInstruction did not result in correct data size")
 }
 
+func Test_PushInstructionRawDataIdxPushesInstructionsAndIdxs(t *testing.T) {
+	prog := New()
+	prog.PushInstructionRawDataIdx(instructions.PUSH, []int{2, 3})
+	assert.Equal(t, 3, len(prog.code), "PushInstructionRawDataIdx did not result in correct code size")
+}
+
 func Test_PushDataPushesDataAndReturnsDataIndex(t *testing.T) {
 	prog := New()
 	idx := prog.PushData(values.FromInt(5))
@@ -67,6 +73,7 @@ func Test_LabelsReturnsLabels(t *testing.T) {
 func Test_DissassembleDoesntCrashLmao(t *testing.T) {
 	prog := New()
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("Hi")})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromFloat(3.4)})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(0)})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(1)})
 	prog.PushInstruction(instructions.ADD, []values.Value{})

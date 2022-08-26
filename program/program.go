@@ -25,13 +25,17 @@ func New() Program {
 	return program
 }
 
-func (p *Program) PushInstruction(opcode int, args []values.Value) error {
+func (p *Program) PushInstruction(opcode int, args []values.Value) {
 	p.code = append(p.code, opcode)
 	for _, arg := range args {
 		dataIdx := p.PushData(arg)
 		p.code = append(p.code, dataIdx)
 	}
-	return nil
+}
+
+func (p *Program) PushInstructionRawDataIdx(opcode int, args []int) {
+	p.code = append(p.code, opcode)
+	p.code = append(p.code, args...)
 }
 
 func (p *Program) PushData(item values.Value) int {
@@ -59,9 +63,11 @@ func (p Program) Disassemble() string {
 	var out bytes.Buffer
 	for idx, data := range p.data {
 		if data.Type() == types.String {
-			out.WriteString(fmt.Sprintf("@%d: %q\n", idx, data))
-		} else {
-			out.WriteString(fmt.Sprintf("@%d: %v\n", idx, data))
+			out.WriteString(fmt.Sprintf("@%d: S(%q)\n", idx, data))
+		} else if data.Type() == types.Int {
+			out.WriteString(fmt.Sprintf("@%d: I(%v)\n", idx, data))
+		} else if data.Type() == types.Float {
+			out.WriteString(fmt.Sprintf("@%d: F(%v)\n", idx, data))
 		}
 	}
 	out.WriteString("\n")

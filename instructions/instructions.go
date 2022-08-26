@@ -32,6 +32,22 @@ var InstructionNames = map[int]string{
 	J:    "J",
 }
 
+var NameToInstruction = map[string]int{
+	"NOOP": NOOP,
+	"PUSH": PUSH,
+	"CALL": CALL,
+	"RET":  RET,
+	"SET":  SET,
+	"GET":  GET,
+	"ADD":  ADD,
+	"SUB":  SUB,
+	"MUL":  MUL,
+	"DIV":  DIV,
+	"JE":   JE,
+	"JNE":  JNE,
+	"J":    J,
+}
+
 var InstructionArities = map[int]int{
 	NOOP: 0,
 	PUSH: 1,

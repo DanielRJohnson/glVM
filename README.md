@@ -28,7 +28,7 @@ It's a work in progress stack-based virtual machine :)
 
 ~~Disassembly for program~~
 
-Bytecode file reading/execution (main executable)
+~~Bytecode file reading/execution (main executable)~~
 
 Pimp out readme (instruction table, fib program, etc)
 
