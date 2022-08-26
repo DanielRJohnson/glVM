@@ -26,6 +26,8 @@ It's a work in progress stack-based virtual machine :)
 
 ~~/frame tests~~
 
+~~Disassembly for program~~
+
 Bytecode file reading/execution (main executable)
 
 ## Not Planned Currently, but Reasonable Extensions

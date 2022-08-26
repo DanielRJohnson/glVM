@@ -202,20 +202,28 @@ func (vm *VM) AdvanceIP() {
 func (vm *VM) Show() string {
 	var buf bytes.Buffer
 	buf.WriteString("=== VM ===\n")
-	buf.WriteString("CODE | ")
+	buf.WriteString("CODE\n| ")
 	for i, part := range vm.program.Code() {
 		if i == int(vm.ip) {
 			buf.WriteString("->")
 		}
 		buf.WriteString(fmt.Sprintf("%d | ", part))
 	}
-	buf.WriteString("\nDATA | ")
+	buf.WriteString("\nDATA\n| ")
 	for _, data := range vm.program.Data() {
-		buf.WriteString(fmt.Sprintf("%d | ", data))
+		if data.Type() == types.String {
+			buf.WriteString(fmt.Sprintf("%q | ", data))
+		} else {
+			buf.WriteString(fmt.Sprintf("%v | ", data))
+		}
 	}
-	buf.WriteString("\nSTACK | ")
+	buf.WriteString("\nSTACK\n| ")
 	for _, op := range vm.stack.Items() {
-		buf.WriteString(fmt.Sprintf("%d | ", op))
+		if op.Type() == types.String {
+			buf.WriteString(fmt.Sprintf("%q | ", op))
+		} else {
+			buf.WriteString(fmt.Sprintf("%v | ", op))
+		}
 	}
 	buf.WriteString("\n==========\n")
 	return buf.String()

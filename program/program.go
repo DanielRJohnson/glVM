@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/danielrjohnson/glVM/instructions"
+	"github.com/danielrjohnson/glVM/types"
 	"github.com/danielrjohnson/glVM/values"
 )
 
@@ -57,7 +58,11 @@ func (p Program) Labels() map[string]int {
 func (p Program) Disassemble() string {
 	var out bytes.Buffer
 	for idx, data := range p.data {
-		out.WriteString(fmt.Sprintf("@%d: %v\n", idx, data))
+		if data.Type() == types.String {
+			out.WriteString(fmt.Sprintf("@%d: %q\n", idx, data))
+		} else {
+			out.WriteString(fmt.Sprintf("@%d: %v\n", idx, data))
+		}
 	}
 	out.WriteString("\n")
 
@@ -68,12 +73,12 @@ func (p Program) Disassemble() string {
 
 	for i := 0; i < len(p.code); i++ {
 		if name, ok := reversedLabels[i]; ok {
-			out.WriteString(fmt.Sprintf("%s: \n", name))
+			out.WriteString(fmt.Sprintf("#%s: ", name))
 		}
 		out.WriteString(instructions.InstructionNames[p.code[i]])
 		for j := 0; j < instructions.InstructionArities[p.code[i]]; j++ {
-			out.WriteString(fmt.Sprintf(" @%d ", p.code[i]))
 			i++
+			out.WriteString(fmt.Sprintf(" @%d ", p.code[i+j]))
 		}
 		out.WriteString("\n")
 	}
