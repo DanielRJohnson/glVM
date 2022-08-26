@@ -12,7 +12,7 @@ import (
 func main() {
 	prog := program.New()
 	// main
-	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(8)})
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(3)})
 	prog.PushInstruction(instructions.CALL, []values.Value{values.FromString("fib")})
 	prog.PushInstruction(instructions.RET, []values.Value{})
 
@@ -51,7 +51,9 @@ func main() {
 	fmt.Println(out)
 
 	vm := VM.New(prog)
-	fmt.Println(vm.Show())
-	vm.Run()
-	fmt.Println(vm.Show())
+	vm.Show()
+	for vm.IPInRange() {
+		vm.Step()
+		fmt.Println(vm.Show())
+	}
 }

@@ -48,7 +48,7 @@ func New(program program.Program) *VM {
 }
 
 func (vm *VM) Run() {
-	for int(vm.ip) < len(vm.program.Code()) {
+	for vm.IPInRange() {
 		vm.Step()
 	}
 }
@@ -197,6 +197,10 @@ func (vm *VM) GetDataFromIP() values.Value {
 
 func (vm *VM) AdvanceIP() {
 	vm.ip++
+}
+
+func (vm *VM) IPInRange() bool {
+	return int(vm.ip) < len(vm.program.Code())
 }
 
 func (vm *VM) Show() string {

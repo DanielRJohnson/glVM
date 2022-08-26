@@ -390,6 +390,15 @@ func Test_AdvanceIPAdvancedIP(t *testing.T) {
 	assert.Equalf(t, int(vm.ip), 1, "AdvanceIP did not increment correctly, one advance yielded %d", vm.ip)
 }
 
+func Test_IPInRangeReturnsCorrectBool(t *testing.T) {
+	prog := program.New()
+	prog.PushInstruction(instructions.NOOP, []values.Value{})
+	vm := New(prog)
+	assert.True(t, vm.IPInRange(), "IP should be in range before execution")
+	vm.Step()
+	assert.False(t, vm.IPInRange(), "IP should be out of range after execution")
+}
+
 func Test_ShowDoesNotCrashLmao(t *testing.T) {
 	prog := program.New()
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("Hi")})
