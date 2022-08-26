@@ -30,6 +30,8 @@ It's a work in progress stack-based virtual machine :)
 
 Bytecode file reading/execution (main executable)
 
+Pimp out readme (instruction table, fib program, etc)
+
 ## Not Planned Currently, but Reasonable Extensions
 
 Arrays + array operations
