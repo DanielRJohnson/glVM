@@ -66,6 +66,7 @@ func Test_LabelsReturnsLabels(t *testing.T) {
 
 func Test_DissassembleDoesntCrashLmao(t *testing.T) {
 	prog := New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("Hi")})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(0)})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(1)})
 	prog.PushInstruction(instructions.ADD, []values.Value{})

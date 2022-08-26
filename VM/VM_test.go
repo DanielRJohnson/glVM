@@ -392,6 +392,7 @@ func Test_AdvanceIPAdvancedIP(t *testing.T) {
 
 func Test_ShowDoesNotCrashLmao(t *testing.T) {
 	prog := program.New()
+	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromString("Hi")})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(0)})
 	prog.PushInstruction(instructions.PUSH, []values.Value{values.FromInt(1)})
 	prog.PushInstruction(instructions.ADD, []values.Value{})
