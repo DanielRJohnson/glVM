@@ -1,7 +1,8 @@
 # glVM
 
 glVM (short for Glimmer VM) is a stack-based virtual machine with a concise instruction set, bytecode file parsing,
-and an exposed API for building programs at compile time.
+and an exposed API for building programs at compile time. The bytecode that this machine runs has support for 
+function calls, control flow, and int/float/string computations. The machine itself is also tested at 100% code coverage.
 
 ## Instruction Set
 
